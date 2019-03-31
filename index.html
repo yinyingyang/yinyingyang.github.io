@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>放置三国</title
+</head>
+<body>
+
+<div id="gf">
+        <p>现在等级：<input type="text" id="n" value="1"></p>
+        <p>到达等级：<input type="text" id="to" value="1000"></p>
+        <p>技巧：<input type="text" id="j" value="123"></p>
+        <p>战斗时长：<input type="text" id="time" value="3"></p>
+        <p>快速次数：<input type="text" id="num" value="11"></p>
+        <p id="showGF">结果</p>
+        <p>神墓导数：<input type="text" id="sm"></p>
+        <p id="showSM"></p>
+    </div>
+    <script>
+        n=document.getElementById("n")
+        to=document.getElementById("to")
+        j=document.getElementById("j")
+        time=document.getElementById("time")
+        num=document.getElementById("num")
+        showGF=document.getElementById("showGF")
+        showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
+        document.getElementById("gf").addEventListener("input",()=>{
+            showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
+        })
+        var sm = document.getElementById("sm");
+        sm.addEventListener("input",()=>{
+            showGF.innerHTML=sm(sm.value)
+        })
+        gf=(n, to, j, time, num)=> {
+            let h = ((to * 500 + n * 500 + 500) * (to - n) / 2) / (j + 1) / 3600 * time;
+            var number = parseInt(h % (24 + 2 * num) - 2 * num);
+            return '从' + n + '级到' + to + '需要' + parseInt(h / (24 + 2 * num)) + '天' + (number<0?0:number) + '小时' + parseInt(((h % 1) * 60)) + '分(可快速' + num * 2 + '小时)';
+        }
+        //t：需要层数,n：现在层数，j：技巧,time：每次战斗时长（秒），num：快速战斗次数
+        sm=(c)=>{let s=0;for(a=1;a<24;a++){s=a%10==0?(c+300+a)*10+s:c+300+a+s;}return s}
+        s*42+300*42+1+2+3+4+5+6+7+8+9+100+11+12+13+14+15+16+17+18+19+200+21+22+23+24
+        sm=(c)=>{return s*42+13170}
+    </scrip>
+</body>
+</html>
