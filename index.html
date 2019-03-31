@@ -43,7 +43,8 @@
         //t：需要层数,n：现在层数，j：技巧,time：每次战斗时长（秒），num：快速战斗次数
 
 
-        function sm(c){return c*42+13170}
-    </script>
+       sm=(c)=>{let s=0;for(a=1;a<25;a++){a%10==0?s=(c+300+a)*10+s:s=c+300+a+s;}return s}
+    
+</script>
 </body>
 </html>
