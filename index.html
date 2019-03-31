@@ -35,10 +35,8 @@
         document.getElementById("sm").addEventListener("input",function(){
             document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
         })
-        function gf(n, to, j, time, num) {
-            
-            n*=1;to*=1;j*=1;time*=1;num*=1;
-            let h = ((to * 500 + n * 500 + 500) * (to - n) / 2) / (j + 1) / 3600 * time;
+        function gf(n, to, j, time, num) 
+            let h = ((to * 500 + n * 500 + 500) * (to - n) / 2) / (j*1 + 1) / 3600 * time;
             var number = parseInt(h /(24 + 2 * num) - 2 * num);
             return '从' + n + '级到' + to + '需要' + parseInt(h / (24 + 2 * num)) + '天' + (number<0?0:number) + '小时' + parseInt(((h % 1) * 60)) + '分(可快速' + num * 2 + '小时)';
         }
