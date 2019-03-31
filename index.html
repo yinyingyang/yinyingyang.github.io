@@ -26,11 +26,11 @@
         num=document.getElementById("num")
         showGF=document.getElementById("showGF")
         //showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
-        document.getElementById("gf").addEventListener("input",()=>{
+        document.getElementById("gf").addEventListener("input",function(){
             showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
         })
         var smcs = document.getElementById("smcs");
-        document.getElementById("sm").addEventListener("input",()=>{
+        document.getElementById("sm").addEventListener("input",function(){
             document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
         })
         function gf(n, to, j, time, num) {
