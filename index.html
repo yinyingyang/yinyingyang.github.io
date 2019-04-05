@@ -36,9 +36,12 @@
             document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
         })
         function gf(n, to, j, time, num) {
-            let h = ((to * 500 + n * 500 + 500) * (to - n) / 2) / (j*1 + 1) / 3600 * time;
-            var number = parseInt(h /(24 + 2 * num) - 2 * num);
-            return '从' + n + '级到' + to + '需要' + parseInt(h / (24 + 2 * num)) + '天' + (number<0?0:number) + '小时' + parseInt(((h % 1) * 60)) + '分(可快速' + num * 2 + '小时)';
+            n*=1;to*=1;j=j*1+1;time*=1;num*=1;
+            if(n>=to)return '';
+            let h = (to<798?(to * 500 + n * 500 + 500) * (to - n) / 2:n<798?(798 * 500 + n * 500 + 500) * (798 - n) / 2+(to-798)*400000:(to-n)*400000) / j / 3600 * time;
+            console.log(h); 
+            let number = parseInt((h % (24 + (2 * num))) - 2 * num);
+            return '从' + n + '级到' + to + '需要' + parseInt(h / (24 + 2 * num)) + '天' + (number < 0 ? 0 : number) + '小时' + (number < 0 ? 0 : parseInt((h % 1) * 60)) + '分(可快速' + num * 2 + '小时)';
         }
         //t：需要层数,n：现在层数，j：技巧,time：每次战斗时长（秒），num：快速战斗次数
 
