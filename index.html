@@ -6,18 +6,22 @@
 </head>
 <body>
 
-    <div id="gf">
-        
-功法用时计算
-        <p>现在等级：<input type="text" id="n" value="1"></p>
-        <p>到达等级：<input type="text" id="to" value="1000"></p>
-        <p>技巧：<input type="text" id="j" value="123"></p>
-        <p>战斗时长：<input type="text" id="time" value="3"></p>
-        <p>快速次数：<input type="text" id="num" value="11"></p>
+        <div id="gf">功法用时计算
+        <p>现在等级：</p><input type="text" id="n" value="500">
+        <p>到达等级：</p><input type="text" id="to" value="750">
+        <p>技巧：</p><input type="text" id="j" value="22">
+        <p>战斗时长：</p><input type="text" id="time" value="3">
+        <p>快速次数：</p><input type="text" id="num" value="11">
         <p id="showGF">结果</p>
     </div>
-    <div  id="sm">
-        <p>神墓层数：<input type="text" id="smcs"></p>
+    <div id="sm">
+        <p>神墓层数：</p><input type="text" id="smcs">
+        <p>云中令数：
+            <input type="radio" name="yzl" onclick="yzl=this.value" checked="checked" value="0">0
+            <input type="radio" name="yzl" onclick="yzl=this.value" value="1">1
+            <input type="radio" name="yzl" onclick="yzl=this.value" value="2">2
+            <input type="radio" name="yzl" onclick="yzl=this.value" value="3">3
+        </p>
         <p id="showSM">24小时神墓积分：</p>
     </div>
     <script>
@@ -28,32 +32,41 @@
         num=document.getElementById("num")
         showGF=document.getElementById("showGF")
         //showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
-        document.getElementById("gf").addEventListener("input",function(){
-            showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
-        })
-        var smcs = document.getElementById("smcs");
-        document.getElementById("sm").addEventListener("input",function(){
-            document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
-        })
+
+        smcs = document.getElementById("smcs");
+        yzl=0;
+
+        //t：需要层数,n：现在层数，j：技巧,time：每次战斗时长（秒），num：快速战斗次数
         function gf(n, to, j, time, num) {
             n*=1;to*=1;j=j*1+1;time*=1;num*=1;
             if(n>=to)return '';
             let h = (to<798?(to * 500 + n * 500 + 500) * (to - n) / 2:n<798?(798 * 500 + n * 500 + 500) * (798 - n) / 2+(to-798)*400000:(to-n)*400000) / j / 3600 * time;
-            console.log(h); 
             let number = parseInt((h % (24 + (2 * num))) - 2 * num);
             return '从' + n + '级到' + to + '需要' + parseInt(h / (24 + 2 * num)) + '天' + (number < 0 ? 0 : number) + '小时' + (number < 0 ? 0 : parseInt((h % 1) * 60)) + '分(可快速' + num * 2 + '小时)';
         }
-        //t：需要层数,n：现在层数，j：技巧,time：每次战斗时长（秒），num：快速战斗次数
 
-
-       function sm(c) {
+        function sm(c) {
             let s = 0;
-            for (a = 1; a < 25;++a) {
+            for (a = 1; a <= yzl*2.4+24;++a) {
                 ++c % 10 == 0 ? s = (c + 300 ) * 10 + s : s = c + 300  + s;
             }
             return  s;
         }
-    
-</script>
+        if(document.addEventListener){
+            document.getElementById("sm").addEventListener("input",function(){
+                document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
+            })
+            document.getElementById("gf").addEventListener("input",function(){
+                showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
+            })
+        }else{
+            document.getElementById("sm").attachEvent("oninput",function(){
+                document.getElementById("showSM").innerHTML='24小时神墓积分：'+sm(smcs.value)
+            })
+            document.getElementById("gf").attachEvent("oninput",function(){
+                showGF.innerHTML=gf(n.value,to.value,j.value,time.value,num.value)
+            })
+        }
+    </script>
 </body>
 </html>
