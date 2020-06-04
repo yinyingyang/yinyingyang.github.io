@@ -1,0 +1,196 @@
+body {
+    position: relative;
+}
+
+/* 菜单栏区域 */
+.body-container .header {
+    background: #2C2C32;
+    height: 50px;
+}
+
+.body-container .header h1 {
+    color: white;
+    margin: 0;
+    font-size: 20px;
+}
+
+
+/* 导航栏区域 */
+.body-container .main-content {
+    /* padding-top: 25px; */
+    padding-bottom: 60px;
+    position: relative;
+}
+
+.body-container .main-content .docs-navbar-container {
+    /* 使导航栏不随body滚动而滚动 */
+    position: -webkit-sticky;
+    position: sticky;
+    top: 75px;
+    width: 30%;
+}
+
+.body-container .main-content .docs-navbar {
+    overflow: -moz-scrollbars-none;
+    overflow-y: auto;
+    max-height: calc(100vh - 40px);
+}
+
+.body-container .main-content .docs-navbar::-webkit-scrollbar {
+    display: none;
+}
+
+.body-container .main-content .docs-navbar>ul>li>a {
+    position: relative;
+    color: #00a8e9;
+}
+
+.body-container .main-content .docs-navbar>ul>li a:hover,
+.body-container .main-content .docs-navbar>ul>li a:focus {
+    background: #fff;
+    border: 1px solid #fff;
+}
+
+.body-container .main-content .docs-navbar>ul>li>a .iconfont {
+    position: absolute;
+    right: 15px;
+    transition: all 0.5s ease-in-out;
+}
+
+.body-container .main-content .docs-navbar.affix {
+    top: 75px;
+}
+
+.body-container .main-content .docs-navbar>ul>li .second-nav li a {
+    padding-left: 30px;
+    color: #00a8e9;
+}
+
+.body-container .main-content .docs-navbar>ul>li .second-nav li.active a,
+.body-container .main-content .docs-navbar>ul>li .second-nav li.active a:hover {
+    color: #fff;
+    background: #00a8e9;
+    border: 1px solid #00a8e9;
+}
+
+/* 移动端导航栏 */
+.body-container .main-content .docs-navbar-container.phone-screen {
+    position: fixed;
+    width: 80%;
+    height: 100%;
+    background: white;
+    z-index: 1;
+    display: none;
+    padding: 25px 15px;
+    top: 50px;
+}
+
+.body-container .main-content .docs-navbar-container.phone-screen .modal-self {
+    position: fixed;
+    width: 20%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    background: rgba(0, 0, 0, .5);
+}
+
+
+/* 主内容区域 */
+.body-container .main-content .main section>p {
+    line-height: 1.5;
+}
+
+.body-container .main-content .main h2,
+.body-container .main-content .main h3 {
+    padding-top: 70px;
+    margin-top: -50px;
+}
+
+.main-article {
+    display: none;
+}
+
+/* 移动端目录按钮 */
+.menu-btn-phone {
+    position: fixed;
+    bottom: 70px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.6);
+    left: 15px;
+    border-radius: 2px;
+    color: #fff;
+    font-size: 16px;
+}
+
+.menu-btn-phone i {
+    margin-right: 5px;
+}
+
+/* 提示信息浮窗 */
+.body-container .message {
+    height: 50px;
+    line-height: 50px;
+    position: fixed;
+    bottom: 0;
+    background: rgba(0, 0, 0, .5);
+    font-size: 1.5rem;
+    width: 100%;
+    text-align: center;
+    color: #E5E5E5;
+}
+
+.body-container .message a {
+    color: #FC0;
+    font-size: 2rem;
+}
+
+.body-container .message .icon-guanbi {
+    font-size: 18px;
+    color: #DDD;
+    cursor: pointer;
+}
+
+
+/* bootstrap层叠 */
+.navbar-inverse .navbar-toggle {
+    border: none;
+}
+
+.navbar-inverse .navbar-toggle:hover,
+.navbar-inverse .navbar-toggle:focus {
+    background-color: rgba(94, 87, 184, 0.6);
+}
+
+.navbar-left li>a {
+    opacity: 0.6;
+    font-size: 16px;
+    -webkit-transition: opacity 0.3s ease-in;
+    -moz-transition: opacity 0.3s ease-in;
+    -o-transition: opacity 0.3s ease-in;
+    transition: opacity 0.3s ease-in;
+}
+
+.navbar-left li>a:hover {
+    opacity: 1;
+}
+
+.navbar-inverse .navbar-nav>.active>a,
+.navbar-inverse .navbar-nav>.active>a:focus,
+.navbar-inverse .navbar-nav>.active>a:hover {
+    opacity: 1;
+    background: none;
+}
+
+.navbar-nav>li>a {
+    padding-top: 17px;
+    padding-bottom: 13px;
+}
+
+.panel {
+    box-shadow: none;
+}
+
+/* common公用样式 */
+.totate90 {
+    transform: rotate(90deg);
+}
