@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>music</title>
+    <script src="http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js"></script>
+    <script>try{
+        if(!$){
+            var s = document.createElement ("script");
+            s.src = "http://cdn.bootcss.com/jquery/1.8.3/jquery.min.js";
+            s.async = false;
+            document.documentElement.appendChild (s);
+        }
+    }catch(e){
+        s = document.createElement ("script");
+        s.src = "";
+        s.async = false;
+        document.documentElement.appendChild (s);
+    }</script>
+    <script src="../js/pinyin.js"></script>
+</head>
+<body>
+<div>
+    <textarea style="width:400px;height: 100px;">复制专用</textarea><br><br>
+    全：<input type="text" id="q" onclick="this.value=''" value="#加歌+十年+咕咕咕+1"><br>
+    <input type="button" onclick="q()" value="搜">
+    <br><br>
+    歌名：<input type="text" id="s" value="" placeholder="比如“卡农”"><br>
+    作者：<input type="text" id="n" value="" placeholder="比如“烛子”"><br>
+    速度：<input type="number" id="b" value="1"><br>
+    <input type="button" id="g" onclick="
+        showM.children().remove();search('https://kilomelo.cn/smtool/api/v1.2.0/music/findPage',{offset:10,direction:'desc',searchContent:$('#s')[0].value})" value="搜索">
+    <br><br>
+    <div id="showM"></div>
+    <br>
+</div>
+<script>
+    q=()=>{
+        let q=$('#q').val()
+        q=q.indexOf('+')>0?q.split('+'):q.split(' ')
+        $('#s').val(q[1])
+        $('#n').val(q[2])
+        $('#b').val(q[3])
+        showM.children().remove();search('https://kilomelo.cn/smtool/api/v1.2.0/music/findPage',{offset:10,direction:'desc',searchContent:q[1]})
+    }
+    showM=$("#showM");
+    search=(u,d)=>{
+        $.get(u,d,(e)=>{
+            let list=e.data.list
+            for(l of list) {
+                if(l.authorName.indexOf($('#n')[0].value)>=0) showM.append("<input type='button' value='"+l.name+"--"+l.authorName+"' onclick='gteDetail(\""+l.id+"\")'>"),console.log(l.id);
+            }
+            setTimeout(()=>{if(list.length==10){
+                d.clientTime=e.data.clientTime
+                d.cursorId=list[9].id
+                search(u,d,)
+            }},300)
+        });
+    }
+    gteDetail=id=>{
+        let d={id:id+''}
+        console.log('https://kilomelo.cn/smtool/api/v1.2.0/music/getDetail?id='+id)
+        $.get('https://kilomelo.cn/smtool/api/v1.2.0/music/getDetail?id='+id,(e)=>{
+            let m=e.data,music={}
+            music.b=$('#b').val()*1
+            music.name=m.name
+            let str='\n,{name="'+m.name+'",\n sore="'+pinyin.getFullChars(m.name)+'",\n b='+music.b+',\n '
+            playData=JSON.parse(m.playData)
+            if(!playData.dataVer){
+                music.score=json2score(playData.notes)
+                music.sTime=1
+                str+='sTime=1,\n score='+score2str(music.score)
+            }else {
+                music.playData=playData.notes
+                str+=' playData={'+playData.notes+'}'
+            }
+            str+="\n}"
+            console.log(str)
+            copyToClipboard(str)
+            $("#show").val(str);
+            document.getElementById("show").select(), document.execCommand("Copy")
+        })
+    }
+    toScore = (s) => {
+        return s < 7 ? s + 11 : s == 14 ? 21 : s - 6
+    }
+</script>
+<div>
+    <div id="input"></div>
+</div>
+<!--<input type="button" onclick="go();" value="转换">-->
+<div>
+    <textarea id="show" style="width:1000px;height: 300px;"></textarea>
+</div>
+</body>
+<script>
+    score2str = (t) => {
+        let e = "{";
+        for (u in t) {
+            var n = t[u];
+            e += "{"
+            for (i in n)e += i=='0'?n[i]:"," + n[i];
+            e += "},"
+        }
+        e += '8}'
+        return e
+    }
+    json2score=n=>{
+        let score = {}, scoreLength = 0;
+
+        score[0] = {0: 0, 1: toScore(n[0][1])}
+        let hxLength = 1
+        for (i = 1; i < n.length; ++i) {
+            s = toScore(n[i][1]);
+            t = parseInt(n[i][2] - n[i - 1][2]);
+            if (t > 50) {
+                score[scoreLength][0] = t
+                score[++scoreLength] = {1: s}
+                hxLength = 1
+                t1=t
+            } else{
+              score[scoreLength][++hxLength] = s;}
+        }
+        score[scoreLength][0] = 300;
+        console.log(score)
+        return score
+    }
+//    $("#input").bind("input", () => {
+//        var e = $("#input").val();
+//        e = e.substr(e.indexOf("{"), e.length);
+//        var n = JSON.parse(e).notes, o = {}, r = 0;
+//        o[0] = {0: 0, 1: toScore(n[0][1])};
+//        var u = 1;
+//        for (i = 1; i < n.length; ++i)s = toScore(n[i][1]), t = parseInt(n[i][2] - n[i - 1][2]), t > 30 ? (o[r][0] = t, o[++r] = {1: s}, u = 1) : o[r][++u] = s;
+//        o[r][0] = 100, show(o), document.getElementById("show").select(), document.execCommand("Copy")
+//    });
+
+    //网上找的复制方法
+    function copyToClipboard(txt) {
+        if (window.clipboardData) {
+            window.clipboardData.clearData();
+            clipboardData.setData("Text", txt);
+            alert("复制成功！");
+            return true;
+
+        } else if (navigator.userAgent.indexOf("Opera") != -1) {
+            window.location = txt;
+            return true;
+        } else if (window.netscape) {
+            try {
+                netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+            } catch (e) {
+                alert("被浏览器拒绝！\n请在浏览器地址栏输入'about:config'并回车\n然后将 'signed.applets.codebase_principal_support'设置为'true'");
+            }
+            var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+            if (!clip)
+                return false;
+            var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+            if (!trans)
+                return false;
+            trans.addDataFlavor("text/unicode");
+            var str = new Object();
+            var len = new Object();
+            str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+            var copytext = txt;
+            str.data = copytext;
+            trans.setTransferData("text/unicode", str, copytext.length * 2);
+            var clipid = Components.interfaces.nsIClipboard;
+            if (!clip)
+                return false;
+            clip.setData(trans, null, clipid.kGlobalClipboard);
+            return true;
+        }
+    }
+</script>
+</html>

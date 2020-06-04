@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>乐谱生成器</title>
+    <style>
+        input[type="button"] {
+            height: 30px;
+            margin-top: 3px;
+            width: 100%
+        }
+
+        .footer table tr td {
+            padding-right: 5px;
+            padding-left: 5px;
+            margin: 0 auto;
+        }
+
+        .footer table tr {
+            width: 100%
+        }
+
+        .footer table {
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            z-index: 1111;
+            margin: auto;
+            left: 0;
+            right: 0;
+        }
+
+        .text {
+            margin: auto;
+            position: fixed;
+            top: -200px;
+            left: 0;
+            right: 0;
+            width: 90%;
+            height: 100px;
+            display: none;
+        }
+
+        #show td p {
+            margin: auto 10px;
+            /*cursor: pointer;*/
+        }
+
+        #show td {
+            /*cursor: pointer;*/
+            text-align: center;
+            width: 30px;
+            height: 160px;
+            border: 2px solid #e9e9e9;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .edit {
+            border: 2px solid #e9aa57;
+        }
+
+        /*下划线*/
+        .x {
+            border-bottom: 1pt double #000000
+        }
+
+        /*双下划线*/
+        .s {
+            border-bottom: 2pt double #000000
+        }
+
+        /*点下划线*/
+        .d {
+            border-bottom: 2pt dotted #000000
+        }
+
+        .h {
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            width: 35px;
+            border: 2px solid #e3e9c0;
+            height: 160px;
+        }
+
+        .editEnt {
+            box-shadow: rgb(28, 245, 145) 0 0 7px
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.js"></script>
+</head>
+<body>
+<div class="h">时值<br>简谱<a href="detail.html">说明</a><a href="../index.html">首页</a></div>
+<div style="overflow-x:auto;margin-left: 55px;margin-top: 0;" id="main">
+    <table style="display:inline">
+        <tr valign="top" id="show">
+        </tr>
+    </table>
+</div>
+
+<textarea name="textarea" class="text" id="text"></textarea>
+<div class="footer">
+    <table sytle="margin： 0 auto；">
+        <tr>
+            <td><input type="button" value="♩--- 全"></td>
+            <td><input type="button" value="♩- 二分"></td>
+            <td><input type="button" value="♩ 四分"></td>
+            <td><input type="button" value="♪ 八分"></td>
+            <td><input type="button" value="♬ 十六"></td>
+            <td><input type="button" value="三十二分"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="11"></td>
+            <td><input type="button" value="12"></td>
+            <td><input type="button" value="13"></td>
+            <td><input type="button" value="14"></td>
+            <td><input type="button" value="15"></td>
+            <td><input type="button" value="附点"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="16"></td>
+            <td><input type="button" value="17"></td>
+            <td><input type="button" value="1"></td>
+            <td><input type="button" value="2"></td>
+            <td><input type="button" value="3"></td>
+            <td><input type="button" value="三连"></td>
+        </tr>
+        <tr>
+            <td><input type="button" value="4"></td>
+            <td><input type="button" value="5"></td>
+            <td><input type="button" value="6"></td>
+            <td><input type="button" value="7"></td>
+            <td><input type="button" value="21"></td>
+            <td><input type="button" value="休止"></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td><input type="button" value="上一个"></td>
+            <td><input type="button" value="删除"></td>
+            <td><input type="button" value="增加"></td>
+            <td><input type="button" value="下一个"></td>
+            <td><input type="button" value="完成"></td>
+        </tr>
+    </table>
+</div>
+<script>
+    let score = {}//谱子
+    let editNote = -1//当前编辑的音符
+    let editEnt//当前编辑显示
+    let qn = 2//当前默认时值
+    //显示到文本框
+    toString =score=> {
+        let e = "";
+        for (u in score) {
+            var n = score[u];
+            e += "{"
+            for (i in n)e += i == '0' ? n[i] : "," + n[i];
+            e += "},"
+        }
+        e = e.substr(0, e.length - 1)
+        $("#text").toggle().val(e).css('top', '10px')
+        return e;
+    };
+    toJSON=str=>{
+
+    }
+
+    //鼠标点击
+//    document.onclick = b => {
+//        var e = b.toElement;
+//        $(e)[0].localName=='input' ? but(e.value) : chickNote(e)
+//    }
+
+    //键盘与按键关系
+    let key = {
+        q: 11, w: 12, e: 13, r: 14, t: 15, a: 16, s: 17, d: 1, f: 2, g: 3, z: 4, x: 5, c: 6, v: 7, b: 21
+    }
+    //键盘与按键绑定
+    document.onkeyup = k => {
+        key[k.key] && but(key[k.key])
+    }
+    //功能键
+    let features={
+        ["♩--- 全"]:()=>{q(16)},
+        ["♩- 二分"]:()=>{q(8)},
+        ["♩ 四分"]:()=>{q(4)},
+        ["♪ 八分"]:()=>{q(2)},
+        ["♬ 十六"]:()=>{q(1)},
+        ["♬ 三二"]:()=>{q(0.5)},
+        附点:()=>{let t = score[editNote][0];t == 0.5 || t % 1 == 0 ? q(t * 1.5) : 0},
+        三连:()=>{q(score[editNote][0] * 0.66)},
+        休止:()=>{addNote(8)},
+        上一个:()=>{editNote > 0 && isComplete() && (showEdit(editEnt.prev()), --editNote)},
+        删除:()=>{deleteObject(score, editNote);score[0] ? (editEnt && editEnt.remove(), showEdit($($("#show")[0].cells[editNote + 1 == $("#show")[0].cells.length ? editNote : --editNote]))) : (editNote = -1,score={},editEnt.remove(),editEnt=0)},
+        增加:()=>{(!score[0] || isComplete()) && addEnNote()},
+        完成:()=>{copyToClipboard(toString(score))},
+    }
+    //按键
+    but = k => {
+        if (isNaN(k)) {
+            features[k]()
+        } else {
+            addNote(k *= 1)
+        }
+    }
+    //当前音符是否完整
+    isComplete = () => {
+        try {
+            if (score[editNote][1])return true
+        } catch (e) {
+            return false
+        }
+    }
+    //增加一个音符框
+    addEnNote = () => {
+        let e = $('<td></td>')
+        editEnt ? editEnt.after(e) : $("#show").append(e);
+        showEdit(e)
+        showNote(score[++editNote] = {0: qn})
+//        e.click(e=>chickNote($(e.toElement)))
+//        e.click(()=>chickNote(e))
+    }
+    //按谱子
+    chickNote = k => {
+        var p = k.parent();
+        try{
+        if (p[0].id == 'show'){
+            showEdit(k)
+            editNote = editEnt.index()
+        }else if(p.parent()[0].id=='show'){
+            showEdit(p)
+            editNote = editEnt.index()
+        }}catch (e){}
+    }
+    //从对象中删除一个值，并整理key值
+    deleteObject = (o, n) => {
+        let length = Object.keys(o).length - 1;
+        for (let i = n; i < length; i++) {
+            o[i] = o[i + 1]
+        }
+        delete o[length]
+    }
+
+    //时值，
+    q = t => {
+        score[editNote][0] == t ? qn = t : (score[editNote][0] = t, showNote(score[editNote]))
+    }
+    //加音符，没有则加，有则删
+    addNote = k => {
+        let noteNow = score[editNote];
+        let length = Object.keys(noteNow).length;
+        let have = false
+        for (let i = 1; i < length; ++i) {
+            if (noteNow[i] == k) {
+                deleteObject(noteNow, i)
+                have = true
+                break;
+            }
+        }
+        have || (noteNow[length] = k)
+        showNote(noteNow)
+    }
+
+    //显示音符
+    showNote = n => {
+        let s = '<p>'
+        for (let i in n) {
+            s += n[i] + '<br>'
+        }
+        editEnt.html(s + '</p>')
+        $("#main").scrollLeft(editEnt[0].offsetLeft + 15)
+    }
+    //高亮显示
+    showEdit = e => {
+        try {
+            editEnt.removeClass("editEnt")
+        } catch (e) {
+        }
+        try {
+            editEnt = e.addClass('editEnt')
+        } catch (e) {
+        }
+    }
+    //网上找的复制方法
+    function copyToClipboard(txt) {
+        if (window.clipboardData) {
+            window.clipboardData.clearData();
+            clipboardData.setData("Text", txt);
+            alert("复制成功！");
+
+        } else if (navigator.userAgent.indexOf("Opera") != -1) {
+            window.location = txt;
+        } else if (window.netscape) {
+            try {
+                netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+            } catch (e) {
+                alert("被浏览器拒绝！\n请在浏览器地址栏输入'about:config'并回车\n然后将 'signed.applets.codebase_principal_support'设置为'true'");
+            }
+            var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);
+            if (!clip)
+                return;
+            var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable);
+            if (!trans)
+                return;
+            trans.addDataFlavor("text/unicode");
+            var str = new Object();
+            var len = new Object();
+            var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);
+            var copytext = txt;
+            str.data = copytext;
+            trans.setTransferData("text/unicode", str, copytext.length * 2);
+            var clipid = Components.interfaces.nsIClipboard;
+            if (!clip)
+                return false;
+            clip.setData(trans, null, clipid.kGlobalClipboard);
+            alert("复制成功！");
+        }
+    }
+
+    function rotate() {
+        if (window.orientation == 180 || window.orientation == 0) {
+            contentDOM.style.width = height + 'px';
+            contentDOM.style.height = width + 'px';
+            contentDOM.style.top = (height - width) / 2 + 'px';
+            contentDOM.style.left = 0 - (height - width) / 2 + 'px';
+            contentDOM.style.transform = 'rotate(90deg)';
+        }
+        if (window.orientation == 90 || window.orientation == -90) {
+            contentDOM.style.width = width + 'px';
+            contentDOM.style.height = height + 'px';
+            contentDOM.style.top = '0px';
+            contentDOM.style.left = '0px';
+            contentDOM.style.transform = 'none';
+        }
+    }
+    window.addEventListener("load", rotate, false);
+    window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", rotate, false);
+    $(":button").click(b=>but(b.toElement.value))
+    $("#show").click(e=>chickNote($(e.toElement)))
+</script>
+</body>
+</html>
